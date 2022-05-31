@@ -40,7 +40,9 @@ cd asset-transfer-basic/application-gateway-go
 go run 
 
 
-# - Postman POST
+# - Postman 
 http://localhost:8080/api/init
+
 http://localhost:8080/api/get
+
 http://localhost:8080/api/create
