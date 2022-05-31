@@ -9,7 +9,7 @@ Node.js and npm
 Expressjs
 Python
 
-# Hyperledger install
+# - Hyperledger install
 Bir klasör açınız ve hyperlender fabric indiriniz.
  curl -sSL https://bit.ly/2ysbOFE | bash -s
  
@@ -17,10 +17,10 @@ Bir klasör açınız ve hyperlender fabric indiriniz.
 # - Test ağına git
 cd fabric-samples/test-network
 
-# Hali hazır da çalışan bir test ağınız var ise temizleyin.
+# - Hali hazır da çalışan bir test ağınız var ise temizleyin.
 ./network.sh down
 
-# — docker' i temizleyin
+# - docker' i temizleyin
 docker rm -f $(docker ps -aq)
 
 # - Ağı Bağlatın
