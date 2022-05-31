@@ -38,3 +38,9 @@ network.sh Kabuk komut dosyasını kullanarak Fabric test ağını başlatırı
 cd asset-transfer-basic/application-gateway-go
 
 go run 
+
+
+# - Postman POST
+http://localhost:8080/api/init
+http://localhost:8080/api/get
+http://localhost:8080/api/create
