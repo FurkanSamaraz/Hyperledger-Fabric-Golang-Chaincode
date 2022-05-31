@@ -11,7 +11,8 @@ Python
 
 # - Hyperledger install
 Bir klasör açınız ve hyperlender fabric indiriniz.
- curl -sSL https://bit.ly/2ysbOFE | bash -s
+
+curl -sSL https://bit.ly/2ysbOFE | bash -s
  
  
 # - Test ağına git
