@@ -78,43 +78,43 @@ Yapı ağı modülündeki Ağ Geçidi Sınıfı, çalışan yapı ağlarına ba�
 
 Gateway Class in fabric-network module is used to connect and interact with running fabric networks. this class includes various methods. those are,
 
-a. connect:
+# a. connect:
 
 Bu yöntem, mevcut kullanıcı veya Yönetici kimliği kullanılarak bağlantı profilinde tanımlanan eşlere ve bunların IP adreslerine dayalı olarak çalışan yapı ağını birbirine bağlar.
 
 This method connects running fabric-network based on the peers and their IP addresses defined in connection profile using existed user or Admin identity.
 
-b. disconnect:
+# b. disconnect:
 
 Bu yöntem, çalışan yapı ağı bağlantısını keser ve önbelleği temizler.
 
 This method disconnects from running fabric-network and cleans up the cache.
 
-c. getClient:
+# c. getClient:
 
 Bu yöntem, geçerli kayıtlı istemci ayrıntılarını bir nesne olarak döndürür.
 
 This method returns current registered client details as an object.
 
-d. getNetwork:
+# d. getNetwork:
 
 Bu yöntem, ağdaki belirli bir kanalla iletişim kurar.
 
 This method communicates with a specified channel in the network.
 
-e. getContract:
+# e. getContract:
 
 getContract yönteminin, bağlantı profilinde tanımlanan ağın üstündeki kanala dağıtılan belirli bir zincir koduna erişimi olacaktır.
 
 getContract method will have access to a particular chaincode deployed to channel on top of the network defined in the connection profile.
 
-f. sendTransaction:
+# f. sendTransaction:
 
 sendTransaction yöntemi, belirli bir zincir kodu yöntemini gönderir ve eşlere (onaylayıcılara) itiraz eder.
 
 submitTransaction method will submit a specified chaincode method and args to the peers(endorsers).
 
-g. evaluateTransaction: 
+# g. evaluateTransaction: 
 
 evaluateTransaction, HTTP isteklerinde GET yöntemine benzer, yalnızca defter durumunu okuyabilir ve chaincode'da sorgulama yöntemleri için kullanılır.
 
@@ -126,19 +126,19 @@ Bu sınıf, kumaş dosya sisteminde kalıcı olan bir Identity cüzdan uygulamas
 
 This class defines the implementation of an Identity wallet that persists to the fabric file system. this class includes some common methods exists, import, delete.
 
-a. exists:
+# a. exists:
 
 Bu yöntem, sağlanan kimliğin dosya sisteminde olup olmadığını kontrol eder.
 
 This method checks whether provided identity exists in the file system or not.
 
-b. import:
+# b. import:
 
 Bu yöntem, oluşturulan PKI ve x509 sertifikalarını ve anahtarlarını, katılımcının kimliği altında dosya sistemi cüzdanına aktarır.
 
 This method imports generated PKI and x509 certificates and keys into the filesystem wallet under the identity of participant.
 
-c. delete:
+# c. delete:
 
 Bu yöntem, belirli bir kullanıcının kimliğini dosya sistemi cüzdanından siler.
 
@@ -152,19 +152,19 @@ Basically, CA provides enrollment certificates in PKI format(public key infrastr
 Key methods in fabric-ca-client
 fabric-ca-client has few common methods used for CA operations. these are register, enroll, re-enroll.
 
-a. register:
+# a. register:
 
 Bu yöntem, yeni Katılımcıları kaydetmek için kullanılır. kayıt başarılı olduğunda, kullanıcı sırrını döndürür. Bu sır, kayıt olurken sağlanmalıdır.
 
 This method is used for registering new Participants. when registration is successful, it returns user secret. This secret needs to be provided while enrolling.
 
-b. enroll:
+# b. enroll:
 
 Bu yöntem, kayıtlı Katılımcıları ağa kaydetmek için kullanılır. Kayıt olmak için, kullanıcının önce kayıt olması gerekir. kayıt başarılı olursa, bu yöntem kullanıcının PKI tabanlı Sertifikasını ve Özel anahtarını döndürür.
 
 This method is used for enrolling registered Participants in the network. in order to enroll, the user must be registered first. if enrollment succeeded, this method will return PKI based Certificate and Private key of the user.
 
-c. reenroll:
+# c. reenroll:
 
 Bir sertifikanın süresinin dolduğu veya güvenliğinin ihlal edildiği durumlar olabilir (bu nedenle iptal edilmesi gerekir). Yani bu, yeniden kayıt devreye girdiğinde ve bu yöntemi kullanarak yeni sertifikalar almak için CA ile aynı kimliği tekrar kaydettirirsiniz.
 
