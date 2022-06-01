@@ -109,6 +109,7 @@ getContract yönteminin, bağlantı profilinde tanımlanan ağın üstündeki ka
 getContract method will have access to a particular chaincode deployed to channel on top of the network defined in the connection profile.
 
 f. sendTransaction:
+
 sendTransaction yöntemi, belirli bir zincir kodu yöntemini gönderir ve eşlere (onaylayıcılara) itiraz eder.
 
 submitTransaction method will submit a specified chaincode method and args to the peers(endorsers).
