@@ -74,47 +74,78 @@ Key Classes and methods in fabric-network
 fabric-network has three main classes
 
 # - 1. Gateway
+Yapı ağı modülündeki Ağ Geçidi Sınıfı, çalışan yapı ağlarına bağlanmak ve bunlarla etkileşim kurmak için kullanılır. bu sınıf çeşitli yöntemler içerir. onlar,
+
 Gateway Class in fabric-network module is used to connect and interact with running fabric networks. this class includes various methods. those are,
 
 a. connect:
+
+Bu yöntem, mevcut kullanıcı veya Yönetici kimliği kullanılarak bağlantı profilinde tanımlanan eşlere ve bunların IP adreslerine dayalı olarak çalışan yapı ağını birbirine bağlar.
 
 This method connects running fabric-network based on the peers and their IP addresses defined in connection profile using existed user or Admin identity.
 
 b. disconnect:
 
+Bu yöntem, çalışan yapı ağı bağlantısını keser ve önbelleği temizler.
+
 This method disconnects from running fabric-network and cleans up the cache.
 
 c. getClient:
+
+Bu yöntem, geçerli kayıtlı istemci ayrıntılarını bir nesne olarak döndürür.
 
 This method returns current registered client details as an object.
 
 d. getNetwork:
 
+Bu yöntem, ağdaki belirli bir kanalla iletişim kurar.
+
 This method communicates with a specified channel in the network.
 
-e. getContract method will have access to a particular chaincode deployed to channel on top of the network defined in the connection profile.
+e. getContract:
 
-f. submitTransaction method will submit a specified chaincode method and args to the peers(endorsers).
+getContract yönteminin, bağlantı profilinde tanımlanan ağın üstündeki kanala dağıtılan belirli bir zincir koduna erişimi olacaktır.
 
-g. evaluateTransaction is similar to GET method in HTTP requests, it can only read the ledger state and used for query methods in chaincode.
+getContract method will have access to a particular chaincode deployed to channel on top of the network defined in the connection profile.
+
+f. sendTransaction:
+sendTransaction yöntemi, belirli bir zincir kodu yöntemini gönderir ve eşlere (onaylayıcılara) itiraz eder.
+
+submitTransaction method will submit a specified chaincode method and args to the peers(endorsers).
+
+g. evaluateTransaction: 
+
+evaluateTransaction, HTTP isteklerinde GET yöntemine benzer, yalnızca defter durumunu okuyabilir ve chaincode'da sorgulama yöntemleri için kullanılır.
+
+evaluateTransaction is similar to GET method in HTTP requests, it can only read the ledger state and used for query methods in chaincode.
 
 # - 2. FileSystemWallet
+
+Bu sınıf, kumaş dosya sisteminde kalıcı olan bir Identity cüzdan uygulamasını tanımlar. Bu sınıf, var olan, içe aktarılan, silinen bazı yaygın yöntemleri içerir.
 
 This class defines the implementation of an Identity wallet that persists to the fabric file system. this class includes some common methods exists, import, delete.
 
 a. exists:
 
+Bu yöntem, sağlanan kimliğin dosya sisteminde olup olmadığını kontrol eder.
+
 This method checks whether provided identity exists in the file system or not.
 
 b. import:
+
+Bu yöntem, oluşturulan PKI ve x509 sertifikalarını ve anahtarlarını, katılımcının kimliği altında dosya sistemi cüzdanına aktarır.
 
 This method imports generated PKI and x509 certificates and keys into the filesystem wallet under the identity of participant.
 
 c. delete:
 
+Bu yöntem, belirli bir kullanıcının kimliğini dosya sistemi cüzdanından siler.
+
 This method deletes the identity of a particular user from the filesystem wallet.
 
 # - 3. X509WalletMixin
+
+Temel olarak CA, PKI formatında (ortak anahtar altyapısı) kayıt sertifikaları sağlar. Bu sınıf, PKI kullanıcı Sertifikaları kullanılarak X.509 kimlik bilgisi modelinde kimlik oluşturmak için kullanılır. Bu sınıf, Kimlik oluşturmak için createIdentity() yöntemini içerir. Bu X.509 sertifikası, ağdaki işlemleri imzalamak için kullanılır. Fabric-ca-client içindeki anahtar yöntemler Fabric-ca-client CA işlemleri için kullanılan birkaç yaygın yönteme sahiptir. bunlar kayıt ol, kayıt ol, yeniden kayıt ol.
 
 Basically, CA provides enrollment certificates in PKI format(public key infrastructure). This class is used for creating identity in X.509 credential model using PKI user Certificates. This class includes createIdentity() method for creating Identity. This X.509 certificate is used for signing transactions in the network.
 Key methods in fabric-ca-client
@@ -122,12 +153,18 @@ fabric-ca-client has few common methods used for CA operations. these are regist
 
 a. register:
 
+Bu yöntem, yeni Katılımcıları kaydetmek için kullanılır. kayıt başarılı olduğunda, kullanıcı sırrını döndürür. Bu sır, kayıt olurken sağlanmalıdır.
+
 This method is used for registering new Participants. when registration is successful, it returns user secret. This secret needs to be provided while enrolling.
 
 b. enroll:
 
+Bu yöntem, kayıtlı Katılımcıları ağa kaydetmek için kullanılır. Kayıt olmak için, kullanıcının önce kayıt olması gerekir. kayıt başarılı olursa, bu yöntem kullanıcının PKI tabanlı Sertifikasını ve Özel anahtarını döndürür.
+
 This method is used for enrolling registered Participants in the network. in order to enroll, the user must be registered first. if enrollment succeeded, this method will return PKI based Certificate and Private key of the user.
 
 c. reenroll:
+
+Bir sertifikanın süresinin dolduğu veya güvenliğinin ihlal edildiği durumlar olabilir (bu nedenle iptal edilmesi gerekir). Yani bu, yeniden kayıt devreye girdiğinde ve bu yöntemi kullanarak yeni sertifikalar almak için CA ile aynı kimliği tekrar kaydettirirsiniz.
 
 There could be cases when a certificate expires or gets compromised (so it has to be revoked). So this is when re-enrollment comes into the picture and you enroll the same identity again with the CA to get new certificates using this method.
