@@ -30,78 +30,121 @@ const (
 	chaincodeName = "basic"
 )
 
+var getall GetAll
+var cre Create
+var initt InitLed
+
+var contract *client.Contract
+var network *client.Network
+var gateway *client.Gateway
+var now = time.Now()
+var assetId = fmt.Sprintf("asset%d", now.Unix()*1e3+int64(now.Nanosecond())/1e6)
+
 type Create struct {
 	Ad    string `json:"ad"`
 	Soyad string `json:"soyad"`
 	Yas   string `json:"yas"`
 }
-
-var yarat Create
-var contract *client.Contract
-
-var now = time.Now()
-var assetId = fmt.Sprintf("asset%d", now.Unix()*1e3+int64(now.Nanosecond())/1e6)
+type InitLed struct {
+	InitLed string `json:"initledger"`
+}
+type GetAll struct {
+	Get string `json:"get"`
+}
 
 func apiIinit(w http.ResponseWriter, r *http.Request) {
+
+	network = gateway.GetNetwork(channelName)
+	contract = network.GetContract(chaincodeName)
 	fmt.Println("initLedger:")
+
+	w.Header().Set("Content-Type", "application/json")
+
+	apiInit := r.FormValue("initleger")
+
+	initt.InitLed = apiInit
+
 	initLedger(contract)
+	fmt.Printf("*** ISLEM BASARILI TAMAMLANDI.\n")
+	byte, _ := json.MarshalIndent(initt, "", "\t")
+	w.Write(byte)
 }
 
 func apiGet(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("getallassets:")
-	getAllAssets(contract)
-}
 
-var ad, soyad, yas string
+	network = gateway.GetNetwork(channelName)
+	contract = network.GetContract(chaincodeName)
+	fmt.Println("getallassets:")
+
+	w.Header().Set("Content-Type", "application/json")
+
+	apiget := r.FormValue("get")
+
+	getall.Get = apiget
+	getAllAssets(contract)
+	fmt.Printf("*** ISLEM BASARILI TAMAMLANDI.\n")
+	byte, _ := json.MarshalIndent(getall, "", "\t")
+	w.Write(byte)
+}
 
 func apiCreate(w http.ResponseWriter, r *http.Request) {
-
+	network = gateway.GetNetwork(channelName)
+	contract = network.GetContract(chaincodeName)
 	fmt.Println("create:")
 
-	contract.SubmitTransaction("CreateAsset", assetId, "FURKAN", "22", "SAMARAZ")
-	fmt.Printf("*** Transaction committed successfully\n")
+	w.Header().Set("Content-Type", "application/json")
 
+	ad := r.FormValue("ad")
+	yas := r.FormValue("yas")
+	soyad := r.FormValue("soyad")
+	cre.Ad = ad
+	cre.Soyad = soyad
+	cre.Yas = yas
+
+	createAsset(contract)
+	fmt.Printf("*** ISLEM BASARILI TAMAMLANDI.\n")
+	byte, _ := json.MarshalIndent(cre, "", "\t")
+	w.Write(byte)
 }
+
 func main() {
 	log.Println("============ application-golang starts ============")
 
-	// The gRPC client connection should be shared by all Gateway connections to this endpoint
+	// gRPC istemci bağlantısı, bu uç noktaya yönelik tüm Ağ Geçidi bağlantıları tarafından paylaşılmalıdır.
 	clientConnection := newGrpcConnection()
 	defer clientConnection.Close()
 
 	id := newIdentity()
 	sign := newSign()
 
-	// Create a Gateway connection for a specific client identity
-	gateway, err := client.Connect(
+	// Belirli bir istemci kimliği için bir Ağ Geçidi bağlantısı oluşturun
+	gateway, _ = client.Connect(
 		id,
 		client.WithSign(sign),
 		client.WithClientConnection(clientConnection),
-		// Default timeouts for different gRPC calls
+		// Farklı gRPC çağrıları için varsayılan zaman aşımları
 		client.WithEvaluateTimeout(5*time.Second),
 		client.WithEndorseTimeout(15*time.Second),
 		client.WithSubmitTimeout(5*time.Second),
 		client.WithCommitStatusTimeout(1*time.Minute),
 	)
-	if err != nil {
-		panic(err)
-	}
+
 	defer gateway.Close()
 
-	network := gateway.GetNetwork(channelName)
+	network = gateway.GetNetwork(channelName)
 	contract = network.GetContract(chaincodeName)
 
-	log.Println("============ application-golang ends ============")
 	r := mux.NewRouter()
 
 	r.HandleFunc("/api/init", apiIinit).Methods("POST")
 	r.HandleFunc("/api/get", apiGet).Methods("POST")
-	r.HandleFunc("/api/create", apiCreate).Methods("POST")
+	r.HandleFunc("/api/create", apiCreate)
 
 	http.ListenAndServe(":8080", r)
 }
 
-// newGrpcConnection creates a gRPC connection to the Gateway server.
+//********************************************************************************************************************************
+//newGrpcConnection, Ağ Geçidi sunucusuna bir gRPC bağlantısı oluşturur.
 func newGrpcConnection() *grpc.ClientConn {
 	certificate, err := loadCertificate(tlsCertPath)
 	if err != nil {
@@ -114,13 +157,13 @@ func newGrpcConnection() *grpc.ClientConn {
 
 	connection, err := grpc.Dial(peerEndpoint, grpc.WithTransportCredentials(transportCredentials))
 	if err != nil {
-		panic(fmt.Errorf("failed to create gRPC connection: %w", err))
+		panic(fmt.Errorf("GRPC BAGLANTISI OLUSTURULAMADI.: %w", err))
 	}
 
 	return connection
 }
 
-// newIdentity creates a client identity for this Gateway connection using an X.509 certificate.
+// newIdentity, bir X.509 sertifikası kullanarak bu Ağ Geçidi bağlantısı için bir istemci kimliği oluşturur.
 func newIdentity() *identity.X509Identity {
 	certificate, err := loadCertificate(certPath)
 	if err != nil {
@@ -138,21 +181,21 @@ func newIdentity() *identity.X509Identity {
 func loadCertificate(filename string) (*x509.Certificate, error) {
 	certificatePEM, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read certificate file: %w", err)
+		return nil, fmt.Errorf("SERTIFIKA DOSYASI OKUNAMADI.: %w", err)
 	}
 	return identity.CertificateFromPEM(certificatePEM)
 }
 
-// newSign creates a function that generates a digital signature from a message digest using a private key.
+// newSign, özel bir anahtar kullanarak bir mesaj özetinden dijital imza oluşturan bir işlev oluşturur.
 func newSign() identity.Sign {
 	files, err := ioutil.ReadDir(keyPath)
 	if err != nil {
-		panic(fmt.Errorf("failed to read private key directory: %w", err))
+		panic(fmt.Errorf("OZEL ANAHTARLI DOSYA OKUNAMADI.: %w", err))
 	}
 	privateKeyPEM, err := ioutil.ReadFile(path.Join(keyPath, files[0].Name()))
 
 	if err != nil {
-		panic(fmt.Errorf("failed to read private key file: %w", err))
+		panic(fmt.Errorf("OZEL ANAHTARLI DOSYA OKUNAMADI.: %w", err))
 	}
 
 	privateKey, err := identity.PrivateKeyFromPEM(privateKeyPEM)
@@ -168,60 +211,49 @@ func newSign() identity.Sign {
 	return sign
 }
 
+//**********************************************************************************************************************************
+// Defter de varlık oluşturma.
 func initLedger(contract *client.Contract) {
-	fmt.Printf("Submit Transaction: InitLedger, function creates the initial set of assets on the ledger \n")
+	fmt.Printf("ISLEM GONDER: InitLedger ISLEVI, DEFTER DE ILK VARLIK KUMESINI DONDURUR.\n")
 
-	_, err := contract.SubmitTransaction("InitLedger")
+	_, err := contract.SubmitTransaction(initt.InitLed)
 	if err != nil {
-		panic(fmt.Errorf("failed to submit transaction: %w", err))
+		panic(fmt.Errorf("ISLEM GONDERILEMEDI!!: %w", err))
 	}
 
-	fmt.Printf("*** Transaction committed successfully\n")
+	fmt.Printf("*** ISLEM BASARIYLA TAMAMLANDI.\n")
 }
 
-// Evaluate a transaction to query ledger state.
+// Defter durumunu sorgulamak için bir işlemi değerlendirin.
 func getAllAssets(contract *client.Contract) {
-	fmt.Println("Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger")
+	fmt.Println("ISLEM DEGERLENDIR GetAllAssets ISLEVI DEFTERDE Kİ TUM MEVCUT VARLIKLARI LISTELER.")
 
-	evaluateResult, err := contract.EvaluateTransaction("GetAllAssets")
+	evaluateResult, err := contract.EvaluateTransaction(getall.Get)
 	if err != nil {
-		panic(fmt.Errorf("failed to evaluate transaction: %w", err))
+		panic(fmt.Errorf("ISLEM GONDERILEMEDI!!: %w", err))
 	}
 	result := formatJSON(evaluateResult)
 
-	fmt.Printf("*** Result:%s\n", result)
+	fmt.Printf("*** SONUC:%s\n", result)
 }
 
-// Submit a transaction synchronously, blocking until it has been committed to the ledger.
+//Deftere taahhüt edilene kadar bloke ederek eşzamanlı olarak bir işlem gönderin.
 func createAsset(contract *client.Contract) {
-	fmt.Printf("Submit Transaction: CreateAsset, creates new asset with ID, Color, Size, Owner and AppraisedValue arguments \n")
+	fmt.Printf("GONDERIM ISLEMI KIMLIK,AD,YAS,SOYAD DEGISKENLERI ILE YENI VARLIK OLUSTURULUR. \n")
 
-	_, err := contract.SubmitTransaction("CreateAsset", assetId, "kral", "52", "kral")
+	_, err := contract.SubmitTransaction("CreateAsset", assetId, cre.Ad, cre.Yas, cre.Soyad)
 	if err != nil {
-		panic(fmt.Errorf("failed to submit transaction: %w", err))
+		panic(fmt.Errorf("ISLEM GONDERILEMEDI!!: %w", err))
 	}
 
-	fmt.Printf("*** Transaction committed successfully\n")
+	fmt.Printf("*** ISLEM BASARIYLA TAMAMLANDI.\n")
 }
 
-// Evaluate a transaction by assetID to query ledger state.
-func readAssetByID(contract *client.Contract) {
-	fmt.Printf("Evaluate Transaction: ReadAsset, function returns asset attributes\n")
-
-	evaluateResult, err := contract.EvaluateTransaction("ReadAsset", assetId)
-	if err != nil {
-		panic(fmt.Errorf("failed to evaluate transaction: %w", err))
-	}
-	result := formatJSON(evaluateResult)
-
-	fmt.Printf("*** Result:%s\n", result)
-}
-
-//Format JSON data
+//JSON verilerini biçimlendir
 func formatJSON(data []byte) string {
 	var prettyJSON bytes.Buffer
 	if err := json.Indent(&prettyJSON, data, " ", ""); err != nil {
-		panic(fmt.Errorf("failed to parse JSON: %w", err))
+		panic(fmt.Errorf("JSON AYRISTIRILAMADI.: %w", err))
 	}
 	return prettyJSON.String()
 }
