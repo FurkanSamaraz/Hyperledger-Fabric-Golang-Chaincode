@@ -41,13 +41,20 @@ go run
 
 
 # - Postman 
+# - Init
 http://localhost:8080/api/init
 
+![Ekran Resmi 2022-06-01 15 33 21](https://user-images.githubusercontent.com/92402372/171405598-8495a9ac-f82b-4675-8310-f0df3ddbe77b.png)
+
+# - Get
 http://localhost:8080/api/get
 
+![Ekran Resmi 2022-06-01 15 33 34](https://user-images.githubusercontent.com/92402372/171405678-f12be428-2457-4f69-8fc6-07a4b79e8d5c.png)
+
+# - Create
 http://localhost:8080/api/create
 
-
+![Ekran Resmi 2022-06-01 15 33 47](https://user-images.githubusercontent.com/92402372/171405713-e893556e-f43c-4b83-9d39-bbc419730188.png)
 
 # - Main Modules in Hyperledger Fabric Node SDK
 Bir sonraki bölümde, bazı kodların üzerinden geçeceğiz. Bu nedenle, ön koşul olarak, Hyperledger Fabric SDK'da kullanılan modüller, çeşitli sınıflar ve yöntemler hakkında temel fikre sahip olmamız gerekir. Bu nedenle bu bölümün atlanması önerilmez. SDK üç ana modülden oluşur
