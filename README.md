@@ -2,6 +2,17 @@
 
 ![image](https://user-images.githubusercontent.com/92402372/171406041-ee5e1eca-3479-4cce-a726-59bf2ab24af1.png)
 
+# Hyperledger Nedir?
+Hyperledger bir kriptopara projesi değildir. Dolayısıyla Fabric ağı kriptopara transferi için değildir. Ağda varlıklar(asset) vardır. Bu varlıkların maddi değeri olabilir. Yalnızca veri barındıran varlıklar da olabilir.
+
+Fabric’in çalışma prensiplerini aşağıdaki maddeler ile açıklayabiliriz:
+
+İşlemler, chaincode’lar(smart contract) ile güvence altına alınır ve tüm katılımcılar Docker konteynırları çalıştırarak ağa bağlanır.
+İşlemler kriptopara olmadan gerçekleştirilir.
+Tüm işlemler gizli ve güvenlidir. Bilgiler, yalnızca ağdaki katılımcıların fikir birliği(consensus) ile güncellenir.
+Tüm işlemlerin içeriği kriptoludur. Böylece içerik tüm kullanıcılar tarafından görüntülenemez.
+Katılımcılar ağa erişim sağlamak için üyelik servislerine kimlik kanıtı yapmak zorundadır.
+
 # Indiriniz:
 Curl
 Docker 
