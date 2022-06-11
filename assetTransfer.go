@@ -11,7 +11,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber/v2"
 	"github.com/hyperledger/fabric-gateway/pkg/client"
 	"github.com/hyperledger/fabric-gateway/pkg/identity"
 	"google.golang.org/grpc"
@@ -52,51 +52,45 @@ type GetAll struct {
 	Get string `json:"get"`
 }
 
-func apiIinit(w http.ResponseWriter, r *http.Request) {
-
+func ApiInit(c *fiber.Ctx) error {
 	network = gateway.GetNetwork(channelName)
 	contract = network.GetContract(chaincodeName)
 	fmt.Println("initLedger:")
-
-	w.Header().Set("Content-Type", "application/json")
-
-	apiInit := r.FormValue("initleger")
-
+	c.Response().Header.Set("Content-Type", "application/json")
+	apiInit := c.FormValue("initleger")
 	initt.InitLed = apiInit
 
 	initLedger(contract)
 	fmt.Printf("*** ISLEM BASARILI TAMAMLANDI.\n")
 	byte, _ := json.MarshalIndent(initt, "", "\t")
-	w.Write(byte)
+	c.JSON(byte)
+	return c.JSON(byte)
 }
 
-func apiGet(w http.ResponseWriter, r *http.Request) {
-
+func ApiGet(c *fiber.Ctx) error {
 	network = gateway.GetNetwork(channelName)
 	contract = network.GetContract(chaincodeName)
 	fmt.Println("getallassets:")
+	c.Response().Header.Set("Content-Type", "application/json")
 
-	w.Header().Set("Content-Type", "application/json")
-
-	apiget := r.FormValue("get")
-
+	apiget := c.FormValue("get")
 	getall.Get = apiget
 	getAllAssets(contract)
 	fmt.Printf("*** ISLEM BASARILI TAMAMLANDI.\n")
 	byte, _ := json.MarshalIndent(getall, "", "\t")
-	w.Write(byte)
+
+	return c.JSON(byte)
 }
 
-func apiCreate(w http.ResponseWriter, r *http.Request) {
+func ApiCreate(c *fiber.Ctx) error {
 	network = gateway.GetNetwork(channelName)
 	contract = network.GetContract(chaincodeName)
 	fmt.Println("create:")
 
-	w.Header().Set("Content-Type", "application/json")
-
-	ad := r.FormValue("ad")
-	yas := r.FormValue("yas")
-	soyad := r.FormValue("soyad")
+	c.Response().Header.Set("Content-Type", "application/json")
+	ad := c.FormValue("ad")
+	yas := c.FormValue("yas")
+	soyad := c.FormValue("soyad")
 	cre.Ad = ad
 	cre.Soyad = soyad
 	cre.Yas = yas
@@ -104,7 +98,8 @@ func apiCreate(w http.ResponseWriter, r *http.Request) {
 	createAsset(contract)
 	fmt.Printf("*** ISLEM BASARILI TAMAMLANDI.\n")
 	byte, _ := json.MarshalIndent(cre, "", "\t")
-	w.Write(byte)
+
+	return c.JSON(byte)
 }
 
 func main() {
@@ -133,14 +128,20 @@ func main() {
 
 	network = gateway.GetNetwork(channelName)
 	contract = network.GetContract(chaincodeName)
+	app := fiber.New()
 
-	r := mux.NewRouter()
+	app.Post("/api/init", ApiInit)
+	app.Post("/api/get", ApiGet)
 
-	r.HandleFunc("/api/init", apiIinit).Methods("POST")
-	r.HandleFunc("/api/get", apiGet).Methods("POST")
-	r.HandleFunc("/api/create", apiCreate)
+	app.Post("/api/create", ApiCreate)
 
-	http.ListenAndServe(":8080", r)
+	//r := mux.NewRouter()
+
+	//r.HandleFunc("/api/init", apiIinit).Methods("POST")
+	//r.HandleFunc("/api/get", apiGet).Methods("POST")
+	//r.HandleFunc("/api/create", apiCreate)
+	app.Listen(":8080")
+	//http.ListenAndServe(":8080", r)
 }
 
 //********************************************************************************************************************************
