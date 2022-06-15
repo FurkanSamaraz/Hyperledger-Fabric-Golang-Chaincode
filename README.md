@@ -43,6 +43,7 @@ docker rm -f $(docker ps -aq)
 
 # - Ağı Bağlatın
 network.sh Kabuk komut dosyasını kullanarak Fabric test ağını başlatırız -ca ise sertifikalar içindir.
+
 ./network.sh up createChannel -c mychannel -ca
 
 # - Chaincode Dağıtın
