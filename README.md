@@ -86,7 +86,7 @@ Bu modül, konuşlandırılan zincir koduyla etkileşim için üst düzey bir AP
 This module provides a high-level API for interacting with the deployed chaincode. Interaction includes submission of transactions and queries.
 
 # - 2.fabric-ca-client:
-Bu modül, kullanıcı kayıtları ve kayıtları, ağ üzerinde yeniden kayıtlar gibi çeşitli sertifika işlemleri sağlar.
+Bu modül, kullanıcı kayıtları ve ağ üzerinde yeniden kayıt gibi çeşitli sertifika işlemleri sağlar.
 
 This module provides various certification operations like user registrations and enrollments, re-enrollments on the network.
 
